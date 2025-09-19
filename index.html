@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Who Knows Me Better?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: url("hey-stranger-welcom.png") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Press Start 2P', cursive;
+      text-align: center;
+      color: darkred;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      color: darkred;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      border: 2px solid darkred;
+      width: 90%;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    button {
+      background: darkred;
+      border: none;
+      padding: 10px 15px;
+      font-size: 12px;
+      cursor: pointer;
+      margin: 10px;
+      color: white;
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    #options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .option-img {
+      width: 120px;
+      margin: 5px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .option-img:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Welcome screen -->
+  <div id="welcome" class="container">
+    <h1>HEY STRANGER WELCOME</h1>
+    <!-- Start button image -->
+    <img src="start-image.png" width="200" style="cursor:pointer;" onclick="startGame()" alt="Start">
+  </div>
+
+  <!-- Name input -->
+  <div id="nameScreen" class="container hidden">
+    <h2>WHAT'S YOUR NAME?</h2>
+    <input type="text" id="playerName" placeholder="Your name...">
+    <br>
+    <button onclick="startQuiz()">CONTINUE</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz" class="container hidden">
+    <h2 id="questionText"></h2>
+    <div id="options"></div>
+  </div>
+
+  <!-- Result -->
+  <div id="result" class="container hidden">
+    <h2 id="finalMessage"></h2>
+    <button onclick="location.reload()">PLAY AGAIN</button>
+  </div>
+
+  <script>
+    const questions = [
+      {q:"What's my favorite color?", a:"Blue", options:[{t:"Blue", img:"blue.png"}, {t:"Red", img:"red.png"}, {t:"White", img:"white.png"}, {t:"Yellow", img:"yellow.png"}]},
+      {q:"What's my favorite pet?", a:"Cats", options:[{t:"Cats", img:"cat.png"}, {t:"Dogs", img:"dog.png"}, {t:"Both", img:"both.png"}, {t:"None"}]},
+      {q:"What's my birthday month?", a:"November", options:[{t:"January"}, {t:"November", img:"November.png"}, {t:"April"}, {t:"July"}]},
+      {q:"My favorite time of the day?", a:"Morning", options:[{t:"Morning", img:"morning.png"}, {t:"Night", img:"night.png"}, {t:"Afternoon", img:"afternoon.png"}, {t:"Evening", img:"evening.png"}]},
+      {q:"My favorite drink?", a:"Iced coffe", options:[{t:"Juice", img:"orange-juice.png"}, {t:"Tea", img:"Tea.png"}, {t:"Hot chocolate", img:"hot-chocolate.png"}, {t:"Iced coffe", img:"iced-coffe.png"}]},
+      {q:"My favorite country?", a:"Thailand", options:[{t:"Japan", img:"Japan.png"}, {t:"USA", img:"USA.png"}, {t:"France", img:"France.png"}, {t:"Thailand", img:"Thailand.png"}]},
+      {q:"My favorite hobby?", a:"Journaling", options:[{t:"Reading", img:"reading.png"}, {t:"Drawing", img:"drawing.png"}, {t:"Gaming", img:"gaming.png"}, {t:"Journaling", img:"journaling.png"}]},
+      {q:"My favorite season?", a:"Winter", options:[{t:"Summer", img:"summer.png"}, {t:"Winter", img:"winter.png"}, {t:"Autume", img:"autume.png"}, {t:"Spring", img:"spring.png"}]},
+      {q:"My favorite place?", a:"None", options:[{t:"Mountains", img:"mountains.png"}, {t:"Beach", img:"beach.png"}, {t:"Both", img:"both.png"}, {t:"None"}]},
+      {q:"Am I introvert or extrovert?", a:"Introvert", options:[{t:"Introvert", img:"introvert.png"}, {t:"Extrovert", img:"extrovert.png"}]}
+    ];
+
+    let current = 0;
+    let score = 0;
+    let playerName = "";
+
+    function startGame() {
+      document.getElementById("welcome").classList.add("hidden");
+      document.getElementById("nameScreen").classList.remove("hidden");
+    }
+
+    function startQuiz() {
+      playerName = document.getElementById("playerName").value || "Player";
+      document.getElementById("nameScreen").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (current >= questions.length) {
+        endGame();
+        return;
+      }
+
+      const q = questions[current];
+      document.getElementById("questionText").innerText = q.q;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      q.options.forEach(opt => {
+        let btn;
+        if(opt.img){
+          btn = document.createElement("img");
+          btn.src = opt.img;
+          btn.className = "option-img";
+        } else {
+          btn = document.createElement("button");
+          btn.innerText = opt.t;
+        }
+        btn.onclick = () => {
+          if (opt.t && opt.t.toLowerCase() === q.a.toLowerCase()) score += 10;
+          current++;
+          showQuestion();
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function endGame() {
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("result").classList.remove("hidden");
+      document.getElementById("finalMessage").innerText =
+        playerName + ", YOUR SCORE IS " + score + "/100";
+    }
+  </script>
+
+</body>
+</html>
